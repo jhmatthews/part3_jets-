@@ -1,0 +1,2 @@
+OBJ += set_conditions.o
+HEADERS += extras.h
