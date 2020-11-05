@@ -38,10 +38,9 @@ void Init_Variable_Jet(char filename[LINELEN])
     if ((dummy[0] != '#'))
     {
       sscanf (dummy, "%le %le", &t, &f);
-      /* convert from Kyrs to seconds then to simulation unit time */
-      /* placeholder trying with 100 yr steps for testing */
-      print ("%le %le\n", t, f);
-      TimeSeries.time[n] = t * 1000.0 * 86400.0 * 365.25 / UNIT_TIME;
+      /* convert from Myrs to seconds then to simulation unit time */
+      // print ("%le %le\n", t, f);
+      TimeSeries.time[n] = t * 1e6 * 86400.0 * 365.25 / UNIT_TIME;
       TimeSeries.flux[n] = f;
 
       n++;
@@ -55,7 +54,7 @@ void Init_Variable_Jet(char filename[LINELEN])
 /* ///////////////////////////////////////////////////////////////////// */
 double GetJetParams(double *var_array, double eta) 
 /*! 
-  Specify the properties inside the jet - could be used to set a variable jet.
+  Specify the properties inside the jet - can be used to set a variable jet.
 */
 /* ///////////////////////////////////////////////////////////////////// */
 {
@@ -122,7 +121,7 @@ double GetJetParams(double *var_array, double eta)
     /* set pressure by jet mach number */
     var_array[PRS] = v_j * v_j / mach_number / mach_number / (5.0/3.0) * rho;
 
-    print ("JM: %8.4e %8.4e %8.4e %8.4e\n", power, v_j, g_time, time_physical);
+    // print ("JM: %8.4e %8.4e %8.4e %8.4e\n", power, v_j, g_time, time_physical);
     //print ("Velocity is %8.4e power %8.4e %8.4e %d\n", v_j, power, TimeSeries.flux[TimeSeries.locator], TimeSeries.locator);
     //print ("Time %8.4e %8.4e\n", time_physical, TimeSeries.time[TimeSeries.locator]);
   }  
