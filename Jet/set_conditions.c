@@ -24,7 +24,7 @@ void Init_Variable_Jet(char filename[LINELEN])
   char dummy[LINELEN];
   FILE *fptr;
   int n;
-  double t, f;
+  double t, g;
 
   if ((fptr = fopen (filename, "r")) == NULL)
   {
@@ -37,11 +37,11 @@ void Init_Variable_Jet(char filename[LINELEN])
   {
     if ((dummy[0] != '#'))
     {
-      sscanf (dummy, "%le %le", &t, &f);
+      sscanf (dummy, "%le %le", &t, &g);
       /* convert from Myrs to seconds then to simulation unit time */
       // print ("%le %le\n", t, f);
       TimeSeries.time[n] = t * 1e6 * 86400.0 * 365.25 / UNIT_TIME;
-      TimeSeries.flux[n] = f;
+      TimeSeries.gmm[n] = g;
 
       n++;
     }
@@ -58,14 +58,15 @@ double GetJetParams(double *var_array, double eta)
 */
 /* ///////////////////////////////////////////////////////////////////// */
 {
-  double v_j, rho, v_j_cubed, interpolated_power, time_physical;
+  double v_j, rho, v_j_cubed, interpolated_gmm, time_physical;
   double power, width_physical, rho_physical; 
   double mach_number = g_inputParam[JET_MACH_NUMBER];
   char filename[LINELEN];
   /* improve this */
-  strcpy (filename, "Lightcurve.dat");
+  sprintf (filename, "gmm_Q%.0f_sig%.1f_eta%.0f_seed%.0f.dat", log10(g_inputParam[Q0]), g_inputParam[SIGMA], log10(g_inputParam[ETA]), g_inputParam[RNG_SEED]);
 
   if (TIME_SERIES && init_jet == 0) {
+    print ("Reading from %s\n", filename);
     Init_Variable_Jet(filename);
     print ("Initialised Variable Jet");
   }
@@ -94,25 +95,13 @@ double GetJetParams(double *var_array, double eta)
       exit (0);
     }
 
-    interpolated_power = TimeSeries.flux[TimeSeries.locator] * (TimeSeries.time[TimeSeries.locator + 1]-g_time);
-    interpolated_power += TimeSeries.flux[TimeSeries.locator + 1] * (g_time - TimeSeries.time[TimeSeries.locator]);
-    interpolated_power /= TimeSeries.time[TimeSeries.locator + 1] - TimeSeries.time[TimeSeries.locator];
-    interpolated_power = TimeSeries.flux[TimeSeries.locator];
+    interpolated_gmm = TimeSeries.gmm[TimeSeries.locator] * (TimeSeries.time[TimeSeries.locator + 1]-g_time);
+    interpolated_gmm += TimeSeries.gmm[TimeSeries.locator + 1] * (g_time - TimeSeries.time[TimeSeries.locator]);
+    interpolated_gmm /= TimeSeries.time[TimeSeries.locator + 1] - TimeSeries.time[TimeSeries.locator];
+    interpolated_gmm = TimeSeries.gmm[TimeSeries.locator];
 
     /* this is in physical units */
-    power = g_inputParam[POWER_NORM] * interpolated_power;
-
-    v_j_cubed = power / rho_physical / width_physical / width_physical / CONST_PI;
-    v_j = pow(v_j_cubed, 1./3.) / UNIT_VELOCITY;
-
-    if (v_j < 0.05) v_j = 0.05;
-    if (v_j > 0.995) v_j = 0.995;
-
-    // if (time_physical < (1e6 * 86400.0 * 365.25))
-    // {
-    //    v_j = 0.5;
-    // }
-
+    v_j = sqrt(1.0 - (1.0 / interpolated_gmm / interpolated_gmm));
 
     /* copy to array */
     var_array[RHO] = rho;
@@ -127,7 +116,7 @@ double GetJetParams(double *var_array, double eta)
   }  
   else 
   {
-    power = g_inputParam[POWER_NORM];
+    power = 1e45;
     //v_j = g_inputParam[V_OVER_C] * CONST_c / UNIT_VELOCITY;  
     v_j_cubed = power / rho_physical / width_physical / width_physical / CONST_PI;
     v_j = pow(v_j_cubed, 1./3.);

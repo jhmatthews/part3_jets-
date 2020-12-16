@@ -20,7 +20,7 @@ struct timeseries
 {
   int npts;
   double time[NMAX_TIME];
-  double flux[NMAX_TIME];
+  double gmm[NMAX_TIME];
   double t0; // offset in time
   int locator;
 }

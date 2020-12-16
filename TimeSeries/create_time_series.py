@@ -24,8 +24,6 @@
 
 # In[ ]:
 
-
-get_ipython().run_line_magic('matplotlib', 'inline')
 import DELCgen 
 import numpy as np
 import matplotlib.pyplot as plt 
@@ -62,30 +60,34 @@ Length = int(Age / tbin)    # number of samples
 # parameters of log-normal distribution (we normalise to 1!) 
 # the terms here are sigma and the last term is the exponential 
 # we set Q_0 =1 here but this could be changed 
+Q_0 = 1.0
 lnQ = np.log(Q_0)
-lognorm_params = (sigma, 0, np.exp(lnQ))
-    
-# paramaters for lc are lognorm parameters, PSD parameters, tbin and Length (Age is really number of points)
-lc = get_lc(lognorm_params, PSD_params, tbin, Length)
 
-# make a plot
-plt.plot(lc.time, lc.flux)
-plt.xlabel("t (Myr)")
-plt.ylabel("Q")
-plt.semilogy()
+sigmas = np.linspace(0.5,3,6)
+seeds = [0,1,2,3,38]
 
-# save the light curve to a file called Lightcurve.dat
-data_to_save = np.column_stack((lc.time, lc.flux))
-np.savetxt("Lightcurve.dat", data_to_save)
+for i, sigma in enumerate(sigmas):
+	for j, seed in enumerate(seeds):
 
+		lognorm_params = (sigma, 0, np.exp(lnQ))
+		    
+		# paramaters for lc are lognorm parameters, PSD parameters, tbin and Length (Age is really number of points)
+		lc = get_lc(lognorm_params, PSD_params, tbin, Length, RandomSeed=seed )
 
-# In[ ]:
+		# make a plot
+		plt.figure()
+		plt.plot(lc.time, lc.flux)
+		plt.xlabel("t (Myr)")
+		plt.ylabel("Q (Arb.)")
+		plt.semilogy()
+		plt.savefig("plots/Lightcurve_sig{:.1f}_seed{:d}.png".format(sigma, seed))
 
+		# save the light curve to a file called Lightcurve.dat
+		data_to_save = np.column_stack((lc.time, lc.flux))
+		fname = "data/Lightcurve_sig{:.1f}_seed{:d}.dat".format(sigma, seed)
+		print (fname)
+		np.savetxt(fname, data_to_save)
 
-
-
-
-# In[ ]:
 
 
 

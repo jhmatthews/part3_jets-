@@ -9,7 +9,7 @@
 #define  TIME_STEPPING                  RK2
 #define  DIMENSIONAL_SPLITTING          NO
 #define  NTRACER                        1
-#define  USER_DEF_PARAMETERS            7
+#define  USER_DEF_PARAMETERS            9
 
 /* -- physics dependent declarations -- */
 
@@ -19,12 +19,14 @@
 /* -- user-defined parameters (labels) -- */
 
 #define  ETA                            0
-#define  POWER_NORM                     1
-#define  JET_WIDTH                      2
-#define  JET_MACH_NUMBER                3
-#define  CS_A                           4
-#define  CORE_RADIUS                    5
-#define  BETA                           6
+#define  SIGMA                          1
+#define  Q0                             2 
+#define  JET_WIDTH                      3
+#define  JET_MACH_NUMBER                4
+#define  CS_A                           5
+#define  CORE_RADIUS                    6
+#define  BETA                           7
+#define  RNG_SEED                       8
 
 /* [Beg] user-defined constants (do not change this line) */
 
