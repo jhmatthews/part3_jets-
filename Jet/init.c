@@ -79,7 +79,8 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX3] = 0.0;
 
   /* set ambient pressure such that sound speed is unit velocity */
-  v[PRS] = sound_speed * sound_speed / (5./3.) * v[RHO];
+  //v[PRS] = sound_speed * sound_speed / (5./3.) * v[RHO];
+  v[PRS] = sound_speed * sound_speed / (5./3.) * rho0;
 
   /* set a pressure floor - not clear if this is needed */
   g_smallPressure = v[PRS] / 500.0;
